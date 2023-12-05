@@ -1,0 +1,30 @@
+/build*
+/dist
+test.d
+test.o
+*stamp
+*.previous
+libre.a
+libre.*dylib
+libre.pc
+libre.so*
+*.gcov
+
+# Windows build folder
+Win32/*
+
+# Visual studio config
+mk/win32/baresip.vcxproj.user
+
+# ctags
+tags
+
+# Vim swp files
+*.swp
+
+# clangd
+.cache
+compile_commands.json
+
+# Visual studio config
+mk/win32/*.vcxproj.user

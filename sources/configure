@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd ./libs/mpg123-1.32.3
+./configure --enable-static --disable-components --enable-libmpg123 --enable-libsyn123
+cd ../..
