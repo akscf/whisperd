@@ -16,13 +16,12 @@
         </settings>
     </http-service>
 
-    <clustering enabled="true" >
+    <cluster-service enabled="true" >
         <settings>
-            <param name="role" value="master"/>
             <param name="address" value="0.0.0.0"/>
             <param name="port" value="5532"/>
         </settings>
-    </clustering>
+    </cluster-service>
 
     <models>
         <model name="base"  file="ggml-base.bin" alias="whisper-1"/>
