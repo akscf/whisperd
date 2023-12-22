@@ -51,7 +51,7 @@ With additional parameters (available only with this daemon):
    -F model="whisper-1" \
    -F file="@test.mp3"
 ```
-available options: 
+available options: <br>
     - <b>language</b> (string) 2-letter abbreviations <br>
     - <b>max-tokens</b> (int) 0...X <br>
     - <b>translate</b> (bool) true/false <br>
