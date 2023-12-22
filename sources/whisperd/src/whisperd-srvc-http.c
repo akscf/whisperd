@@ -182,6 +182,14 @@ static int http_request_handle_async_thread(void *udata) {
                 /*dopt = odict_lookup(odict, "markers");
                 if(odict_entry_type(dopt) == ODICT_ARRAY) { }
                 */
+
+                if(wd_global->fl_sim_enabled) {
+                    dopt = odict_lookup(odict, "sim-text");
+                    if(odict_entry_type(dopt) == ODICT_STRING) { str_dup(&trans_ctx->xx_sim_text, odict_entry_str(dopt)); }
+
+                    dopt = odict_lookup(odict, "sim-delay");
+                    if(odict_entry_type(dopt) == ODICT_INT) { trans_ctx->xx_sim_delay = odict_entry_int(dopt); }
+                }
             } else {
                 log_warn("Couldn't parse opts");
             }

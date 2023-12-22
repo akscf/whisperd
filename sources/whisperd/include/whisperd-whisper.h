@@ -19,13 +19,16 @@ typedef struct {
     char                    *language;
     char                    *model_name;
     char                    *eparams;
-    wd_list_t               *segments;     // not used
+    wd_list_t               *segments;      // not used
     uint32_t                wop_max_tokens;
     uint32_t                wop_speed_up;
     uint32_t                wop_translate;
     uint32_t                wop_single_segment;
     uint32_t                fl_destroyed;
     uint32_t                fl_abort;
+    // for simulation
+    uint32_t                xx_sim_delay;
+    char                    *xx_sim_text;
 } wd_whisper_trans_ctx_t;
 
 typedef struct {

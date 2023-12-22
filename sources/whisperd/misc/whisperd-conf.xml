@@ -39,6 +39,7 @@
         <settings>
             <param name="max-threads" value="20"/>
             <param name="max-tokens" value="0"/>
+            <param name="sim-enabled" value="false"/>
         </settings>
     </whisper-worker>
 

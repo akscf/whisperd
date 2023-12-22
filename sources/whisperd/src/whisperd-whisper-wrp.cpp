@@ -42,6 +42,7 @@ class WhisperWorker {
             char *lang = NULL;
             int segments = 0;
 
+
             if(!tctx || !tctx->audio_buffer_ref || !tctx->text_buffer) {
                 log_error("Invalid arguments");
                 return WD_STATUS_FALSE;
@@ -78,6 +79,13 @@ class WhisperWorker {
             wparams.encoder_begin_callback_user_data = tctx;
             wparams.encoder_begin_callback = (whisper_encoder_begin_callback) WhisperWorker::wcb_encoder_begin;
 
+            if(tctx->xx_sim_text) {
+                log_debug("[%x] simulate transcription with: text=[%s], delay=[%i]", wid, tctx->xx_sim_text,  tctx->xx_sim_delay);
+                if(tctx->xx_sim_delay > 0) { sys_msleep(tctx->xx_sim_delay); }
+                mbuf_write_str(tctx->text_buffer, tctx->xx_sim_text);
+                log_debug("[%x] simulation - done", wid);
+                goto done;
+            }
 
             tm_start = time_ms_now();
             log_debug("[%x] --> transcription-start", wid);
@@ -102,7 +110,12 @@ class WhisperWorker {
             if((segments = whisper_full_n_segments(whisper_ctx))) {
                 for(uint32_t i = 0; i < segments; ++i) {
                     const char *text = whisper_full_get_segment_text(whisper_ctx, i);
-                    mbuf_write_str(tctx->text_buffer, text);
+
+                    if(text && text[0] == ' ') {
+                        mbuf_write_str(tctx->text_buffer, (char *)(text + 1));
+                    } else {
+                        mbuf_write_str(tctx->text_buffer, text);
+                    }
                 }
             }
 

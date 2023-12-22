@@ -162,8 +162,8 @@ wd_status_t wd_config_load(whisperd_global_t *wd_global) {
         }
     }
 
-    // clustering
-    if((xelem = ezxml_child(xml, "clustering")) != NULL) {
+    // cluster-service
+    if((xelem = ezxml_child(xml, "cluster-service")) != NULL) {
         const char *enable = ezxml_attr(xelem, "enabled");
         if(str_casecmp(enable, "true") == 0) {
             wd_global->cluster_service->enabled = true;
@@ -192,6 +192,8 @@ wd_status_t wd_config_load(whisperd_global_t *wd_global) {
                     if(val) wd_global->whisper_worker->max_threads = atoi(val);
                 } else if(str_casecmp(name, "max-tokens") == 0) {
                     if(val) wd_global->whisper_worker->max_tokens= atoi(val);
+                } else if(str_casecmp(name, "sim-enabled") == 0) {
+                    if(val && str_casecmp(val, "true") == 0) wd_global->fl_sim_enabled = true;
                 }
             }
         }

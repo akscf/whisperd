@@ -19,6 +19,7 @@ static void destructor__wd_whisper_trans_ctx_t(void *data) {
     mem_deref(ptr->language);
     mem_deref(ptr->model_name);
     mem_deref(ptr->eparams);
+    mem_deref(ptr->xx_sim_text);
 }
 
 static void destructor__wd_whisper_worker_t(void *data) {

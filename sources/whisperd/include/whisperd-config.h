@@ -45,6 +45,7 @@ typedef struct {
     uint32_t    active_threds;
     bool        fl_ready;
     bool        fl_shutdown;
+    bool        fl_sim_enabled;
     //
     wd_config_entry_whisper_worker_t    *whisper_worker;
     wd_config_entry_service_http_t      *http_service;
