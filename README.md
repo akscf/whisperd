@@ -41,3 +41,19 @@ Absolutely similar with the OpenAI:
    -F model="whisper-1" \
    -F file="@test.mp3"
 ```
+
+With additional parameters (available only with this daemon):
+```bash
+# curl http://127.0.0.1/v1/audio/transcriptions \
+   -H "Authorization: Bearer --YourSecertFromConfig--" \
+   -H "Content-Type: multipart/form-data" \
+   -F opts="{\"language\":\"ru\"}" \
+   -F model="whisper-1" \
+   -F file="@test.mp3"
+```
+available options: 
+    - <b>language</b> (string) 2-letter abbreviations <br>
+    - <b>max-tokens</b> (int) 0...X <br>
+    - <b>translate</b> (bool) true/false <br>
+
+
