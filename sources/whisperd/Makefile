@@ -10,14 +10,35 @@ MPG123_LIB=../libs/mpg123-1.32.3/src/libmpg123/.libs/libmpg123.a ../libs/mpg123-
 RE_INC=-I../libs/libre/dist/include
 RE_LIB=../libs/libre/dist/lib/libre.a
 
+ifeq ($(UNAME_S),Darwin)
+SSL_INC=-I/opt/homebrew/opt/openssl@3/include
+SSL_LIB=/opt/homebrew/opt/openssl@3/lib/libcrypto.a /opt/homebrew/opt/openssl@3/lib/libssl.a
+endif
+
 #DFLAGS+=-DWD_DEBUG_ENABLE_RE_MEMDEBUG -DWD_DEBUG_ENABLE_RE_TMRDEBUG
+
+ifeq ($(UNAME_S),Darwin)
+OFLAGS=-O3
+else
 OFLAGS=-O3 -march=westmere
+endif
 CFLAGS=-g ${OFLAGS} ${DFLAGS}
+ifeq ($(UNAME_S),Darwin)
+CFLAGS+=-I./include -I../libs/ezxml -I../libs/multipart -I./whisper_cpp ${RE_INC} ${MPG123_INC} ${SSL_INC}
+else
 CFLAGS+=-I./include -I../libs/ezxml -I../libs/multipart -I./whisper_cpp ${RE_INC} ${MPG123_INC}
+endif
 LIBS+=../libs/ezxml/libezxml.a
 LIBS+=../libs/multipart/libmultipart.a
+ifeq ($(UNAME_S),Darwin)
+LIBS+=${RE_LIB} ${MPG123_LIB} ${SSL_LIB}
+LIBS+=-lc -lm -lpthread -lz
+else
 LIBS+=${RE_LIB} ${MPG123_LIB}
 LIBS+=-lc -lm -lpthread -lssl -lcrypto -lz
+endif
+
+
 
 OBJECTS=$(SOURCES:.c=.o) $(CXXSOURCES:.cpp=.o)
 
@@ -26,7 +47,11 @@ SOURCES+=./src/whisperd-parser.c ./src/whisperd-model.c ./src/whisperd-hashtable
 SOURCES+=./whisper_cpp/ggml.c
 
 CXXFLAGS=${OFLAGS} ${DFLAGS} -std=c++11 -fpermissive -I./include -I./whisper_cpp ${RE_INC}
+ifeq ($(UNAME_S),Darwin)
+CXXLIBS=-lstdc++
+else
 CXXLIBS=-lstdc++ -lgcc
+endif
 CXXSOURCES=./whisper_cpp/common-ggml.cpp ./whisper_cpp/whisper.cpp ./src/whisperd-whisper-wrp.cpp
 
 ifeq ($(UNAME_S),FreeBSD)
