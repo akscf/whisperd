@@ -31,7 +31,7 @@
 #define wd_goto_status(_status, _label) status = _status; goto _label
 
 #define log_notice(fmt, ...) do{syslog(LOG_NOTICE, "NOTICE [%s:%d]: " fmt, __FILE__, __LINE__, ##__VA_ARGS__);} while (0)
-#define log_debug(fmt, ...) do{syslog(LOG_DEBUG, "DEBUG [%s:%d]: " fmt, __FILE__, __LINE__, ##__VA_ARGS__);} while (0)
+#define log_debug(fmt, ...) do{syslog(LOG_NOTICE, "DEBUG [%s:%d]: " fmt, __FILE__, __LINE__, ##__VA_ARGS__);} while (0)
 #define log_error(fmt, ...) do{syslog(LOG_ERR, "ERROR [%s:%d]: " fmt, __FILE__, __LINE__, ##__VA_ARGS__);} while (0)
 #define log_warn(fmt, ...) do{syslog(LOG_WARNING, "WARN [%s:%d]: " fmt, __FILE__, __LINE__, ##__VA_ARGS__);} while (0)
 #define log_mem_fail() do{syslog(LOG_ERR, "FAIL [%s:%d]: mem fail!", __FILE__, __LINE__);} while (0)
@@ -39,11 +39,11 @@
 #define print_mem_fail() do{re_fprintf(stderr, "FAIL [%s:%d]: mem fail!\n", __FILE__, __LINE__);} while (0)
 
 #define DEFAULT_HOME    "/opt/whisperd"
-#define APP_VERSION     "1.0 (a01)"
+#define APP_VERSION     "1.0 (a02)"
 #define SYSLOG_NAME     "whisperd"
 
-//#define WD_DEBUG_ENABLE_RE_MEMDEBUG
-//#define WD_DEBUG_ENABLE_RE_TMRDEBUG
+#define WD_DEBUG_ENABLE_RE_MEMDEBUG
+#define WD_DEBUG_ENABLE_RE_TMRDEBUG
 #define WD_DEBUG_ENABLE_REQ_FORM
 
 typedef enum { WD_STATUS_SUCCESS = 0, WD_STATUS_FALSE, WD_STATUS_NOT_FOUND, WD_STATUS_ALREADY_EXISTS } wd_status_t;

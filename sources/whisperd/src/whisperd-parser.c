@@ -102,6 +102,7 @@ wd_status_t wd_parse_form_openai(wd_http_form_params_v1_t **params, const http_m
 
     result = mem_zalloc(sizeof(wd_http_form_params_v1_t), destructor_wd_http_form_params_v1_t);
     if(!result) {
+        log_error("mem fail");
         log_mem_fail_goto_status(WD_STATUS_FALSE, out);
     }
 

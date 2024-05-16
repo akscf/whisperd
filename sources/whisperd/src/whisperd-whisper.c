@@ -44,11 +44,13 @@ wd_status_t wd_whisper_trans_ctx_alloc(wd_whisper_trans_ctx_t **ctx, char *model
 
     ctx_local = (wd_whisper_trans_ctx_t *) mem_zalloc(sizeof(wd_whisper_trans_ctx_t), destructor__wd_whisper_trans_ctx_t);
     if(ctx_local == NULL) {
+        log_error("mem fail");
         log_mem_fail_goto_status(WD_STATUS_FALSE, out);
     }
 
     ctx_local->text_buffer = mbuf_alloc(4096);
     if(ctx_local->text_buffer == NULL) {
+        log_error("mem fail");
         log_mem_fail_goto_status(WD_STATUS_FALSE, out);
     }
     ctx_local->segments = NULL;
@@ -68,11 +70,13 @@ wd_status_t wd_whisper_worker_alloc(wd_whisper_worker_t **worker, wd_model_descr
 
     w_local = (wd_whisper_worker_t *) mem_zalloc(sizeof(wd_whisper_worker_t), destructor__wd_whisper_worker_t);
     if(w_local == NULL) {
+        log_error("mem fail");
         log_mem_fail_goto_status(WD_STATUS_FALSE, out);
     }
     w_local->id = rand_u32();
 
     if((status = wd_whisper_worket_init_obj(w_local, model)) != WD_STATUS_SUCCESS) {
+        log_error("wd_whisper_worket_init_obj() failed");
         log_mem_fail_goto_status(WD_STATUS_FALSE, out);
     }
 
@@ -105,10 +109,12 @@ wd_status_t wd_whisper_transcript(wd_whisper_trans_ctx_t *tctx) {
         }
 
         if(wd_whisper_worker_alloc(&worker, model_descr) != WD_STATUS_SUCCESS) {
+            log_error("mem fail");
             log_mem_fail_goto_status(WD_STATUS_FALSE, done);
         }
 
         if(wd_list_add_tail(workres, worker) != WD_STATUS_SUCCESS) {
+            log_error("wd_list_add() fail");
             log_mem_fail_goto_status(WD_STATUS_FALSE, done);
         }
     }

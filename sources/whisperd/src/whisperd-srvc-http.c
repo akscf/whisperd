@@ -128,29 +128,34 @@ static int http_request_handle_async_thread(void *udata) {
     log_debug("wparam.body_encoding....[%s]", form_params->body_encoding);
     log_debug("wparam.options..........[%s]", form_params->opts);
     log_debug("wparam.body_len.........[%i]", (uint32_t)form_params->body->pos);
-#endif // WD_DEBUG_ENABLE_REQ_FORM
+#endif
 
     if(!form_params->model_name) {
+        log_warn("Malformed param: model");
         re_sdprintf(&response_erro_msg, "Malformed param: model");
         goto rsp;
     }
     if(!form_params->file_encoding) {
+        log_warn("Malformed param: file");
         re_sdprintf(&response_erro_msg, "Malformed param: file");
         goto rsp;
     }
 
     if((model_descr = wd_model_lookup(form_params->model_name)) == NULL) {
+        log_warn("Unknown model: %s", form_params->model_name);
         re_sdprintf(&response_erro_msg, "Unknown model: %s", form_params->model_name);
         goto rsp;
     }
 
     if(str_casecmp(form_params->file_encoding, "mp3") == 0) {
         if(wd_audio_mp3_decode(&waudio_buffer, form_params->body) != WD_STATUS_SUCCESS) {
+            log_warn("Couldn't decode file (mp3)");
             re_sdprintf(&response_erro_msg, "Couldn't decode file (mp3)");
             goto rsp;
         }
     } else if(str_casecmp(form_params->file_encoding, "wav") == 0) {
         if(wd_audio_wav_decode(&waudio_buffer, form_params->body) != WD_STATUS_SUCCESS) {
+            log_warn("Couldn't decode file (wav)");
             re_sdprintf(&response_erro_msg, "Couldn't decode file (wav)");
             goto rsp;
         }
@@ -161,8 +166,9 @@ static int http_request_handle_async_thread(void *udata) {
 
     if(waudio_buffer) {
         if(wd_whisper_trans_ctx_alloc(&trans_ctx, form_params->model_name) != WD_STATUS_SUCCESS) {
+            log_error("mem fail");
             re_sdprintf(&response_erro_msg, "Internal error");
-            log_error("mem fail"); goto rsp;
+            goto rsp;
         }
 
         if(form_params->opts) {
@@ -199,6 +205,8 @@ static int http_request_handle_async_thread(void *udata) {
         trans_ctx->model_descr_ref = model_descr;
         trans_ctx->audio_buffer_ref = waudio_buffer;
 
+        log_debug("start wshisper, ctx=%p", trans_ctx);
+
         if(wd_whisper_transcript(trans_ctx) == WD_STATUS_SUCCESS) {
             uint32_t tlen = trans_ctx->text_buffer->pos;
             if(tlen) {
@@ -206,6 +214,7 @@ static int http_request_handle_async_thread(void *udata) {
                 mbuf_strdup(trans_ctx->text_buffer, &response_ok_msg, tlen);
             }
         } else {
+            log_warn("Transcription failed (sys_err)");
             re_sdprintf(&response_erro_msg, "Transcription failed (sys_err)");
         }
     }
@@ -241,6 +250,8 @@ static void http_request_handler(struct http_conn *conn, const struct http_msg *
     const http_hdr_t *hdr_auth = NULL;
     bool auth_success = false;
 
+    log_debug("http_request_handler() - enter");
+
     if(http_msg_xhdr_has_value(msg, "Sec-WebSocket-Protocol", "xaudio")) {
         //
         // todo, websocket stream
@@ -249,30 +260,36 @@ static void http_request_handler(struct http_conn *conn, const struct http_msg *
         goto out;
     }
 
+
     if(http_config_entry->max_threads && http_service_conf->active_treads >= http_config_entry->max_threads) {
         log_warn("Threads limit reached (%i)", http_service_conf->active_treads);
         http_reply(conn, 503, "Server busy", NULL);
         goto out;
     }
     if(http_config_entry->max_content_length && msg->clen >= http_config_entry->max_content_length) {
-        http_reply(conn, 400, "Content length is too huge", NULL);
+        log_warn("Content length is too big");
+        http_reply(conn, 400, "Content length is too big", NULL);
         goto out;
     }
     if((http_config_entry->min_content_length && msg->clen < http_config_entry->min_content_length) || (msg->clen <= 0)) {
+        log_warn("Content length is too small");
         http_reply(conn, 400, "Content length is too small", NULL);
         goto out;
     }
     if(pl_strcasecmp(&msg->met, "post") != 0) {
+        log_warn("Wrong request method");
         http_reply(conn, 400, "Bad request", NULL);
         goto out;
     }
 
     hdr_ctype = http_msg_hdr(msg, HTTP_HDR_CONTENT_TYPE);
     if(!hdr_ctype) {
+        log_warn("Wrong content-type");
         http_reply(conn, 400, "Bad request", NULL);
         goto out;
     }
 
+    log_debug("http_request_handler() - auth");
     hdr_auth = http_msg_hdr(msg, HTTP_HDR_AUTHORIZATION);
     if(hdr_auth) {
         pl_t secret = { 0 };
@@ -293,12 +310,12 @@ static void http_request_handler(struct http_conn *conn, const struct http_msg *
         sa_ntop(peer_sa, peer_addr, sizeof(peer_addr));
 
         log_warn("Authentication faild (remote-ip: %s)", (char *) peer_addr);
-
         write_json_response_error(conn, "Invalid API key");
         goto out;
     }
 
     /* simulate OpenAI api */
+    log_debug("http_request_handler() - cmp request path");
     if(pl_strcasecmp(&msg->path, "/v1/audio/transcriptions") == 0) {
         wd_http_form_params_v1_t *form_params = NULL;
         pl_t boundary = { 0 };
@@ -310,6 +327,7 @@ static void http_request_handler(struct http_conn *conn, const struct http_msg *
 
                     async_params = mem_zalloc(sizeof(http_req_async_params_t), NULL);
                     if(!async_params) {
+                        log_error("mem fail");
                         mem_deref(form_params);
                         log_mem_fail_goto_status(WD_STATUS_FALSE, out);
                     }
@@ -322,8 +340,12 @@ static void http_request_handler(struct http_conn *conn, const struct http_msg *
                     // at first sight it should workout fine but...
                     mem_ref(conn);
 
+                    log_debug("http_request_handler() - launch async_thread");
+
                     service_active_treads_increase();
                     if(wd_thread_launch(http_request_handle_async_thread, async_params) != WD_STATUS_SUCCESS) {
+                        log_error("wd_thread_launch() failed");
+
                         service_active_treads_decrease();
 
                         mem_deref(async_params);
