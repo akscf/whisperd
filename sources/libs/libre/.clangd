@@ -1,5 +1,0 @@
-If:
-  PathMatch: [include/.*\.h]
-CompileFlags:
-  Add: [-Wall, -DHAVE_INTTYPES_H, -include re.h]
-  Remove: [-xobjective-c++-header]

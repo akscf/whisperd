@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<configuration version="1">
+    <whisper>
+        <settings>
+            <param name="max-threads" value="16"/>
+            <param name="max-tokens" value="0"/>
+	    <param name="flash-attn" value="false"/>
+	    <param name="use-gpu" value="false"/>
+	    <param name="gpu-dev" value="0"/>
+        </settings>
+    </whisper>
+
+    <models path="/opt/whisper-models">
+        <model name="base"  file="ggml-model-whisper-base.bin" alias="whisper-1"/>
+        <model name="tiny" file="ggml-model-whisper-tiny.bin" />
+        <model name="small" file="ggml-model-whisper-small.bin" />
+        <!--
+        <model name="base-en" file="ggml-base.en.bin" />
+        <model name="small-en" file="ggml-small.en.bin" />
+        <model name="large-en" file="ggml-large.en.bin" />
+        <model name="medium-en" file="ggml-medium.en.bin" />
+        <model name="tiny-en" file="ggml-tiny.en.bin" />
+        -->
+    </models>
+
+    <!--
+    <pools>
+	<pool model="base" min="1" max="10" use-gpu="true" gpu-devs="0,1,2" />
+    </pools>
+    -->
+
+</configuration>

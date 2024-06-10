@@ -1,46 +1,18 @@
 <?xml version="1.0"?>
 <configuration version="1">
-
-    <http-service enabled="true" >
+    <http-server>
         <settings>
             <param name="address" value="0.0.0.0"/>
             <param name="port" value="8080"/>
-            <param name="ssl-port" value="8443"/>
-            <param name="cert-file" value="server.pem"/>
-            <param name="access-secret" value="secret123"/>
-            <param name="max-threads" value="16"/>
-            <param name="max-websoc-connections" value="16"/>
-            <param name="max-content-length" value="1048576"/>
-            <param name="min-content-length" value="10"/>
-            <param name="idle-timeout" value="0"/>
+            <param name="secret" value="secret123"/>
+            <param name="max-conns" value="100"/>
+            <param name="max-idle" value="300"/>
         </settings>
-    </http-service>
+    </http-server>
 
-    <cluster-service enabled="true" >
-        <settings>
-            <param name="address" value="0.0.0.0"/>
-            <param name="port" value="5532"/>
-        </settings>
-    </cluster-service>
-
-    <models>
-        <model name="base"  file="ggml-base.bin" alias="whisper-1"/>
-        <model name="large" file="ggml-large.bin" />
-        <model name="small" file="ggml-small.bin" />
-
-        <model name="base-en" file="ggml-base.en.bin" language="en" />
-        <model name="small-en" file="ggml-small.en.bin" language="en" />
-        <model name="large-en" file="ggml-large.en.bin"  language="en"/>
-        <model name="medium-en" file="ggml-medium.en.bin" language="en" />
-        <model name="tiny-en" file="ggml-tiny.en.bin"  language="en" />
-    </models>
-
-    <whisper-worker>
-        <settings>
-            <param name="max-threads" value="20"/>
-            <param name="max-tokens" value="0"/>
-            <param name="sim-enabled" value="false"/>
-        </settings>
-    </whisper-worker>
+    <modules>
+        <module enabled="true" name="mod-whisper-cpp.so" endpoint="/v1/audio/transcriptions/" />
+        <!-- <module enabled="true" name="mod-whisper-fast.so" endpoint="/whisper2/" /> -->
+    </modules>
 
 </configuration>
