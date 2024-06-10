@@ -9,7 +9,7 @@ Capable to work only with whisper_cpp and have some issues...
 - some extra parameters for tuning the whisper for a certain request
 
 ### Version 2.0 (ready)
-- supports the latest version of whisper_cpp (10.06.2024) 
-  see: mod-whisper-cpp, with cpu/gpu modes and so on
+- supports the latest version of whisper_cpp (10.06.2024)<br> 
+  with cpu/gpu and more features (see: mod-whisper-cpp)
 - todo: build/install instrutions
 
