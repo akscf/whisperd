@@ -23,10 +23,6 @@ static whsd_modules_manager_t *manager = NULL;
 static module_entry_t *module_lookup(const char *name);
 
 // --------------------------------------------------------------------------------------------------------------
-static void destructor__hashtable_values(void *ptr) {
-    wstk_mem_deref(ptr);
-}
-
 static void destructor__whsd_modules_manager_t(void *data) {
     whsd_modules_manager_t *obj = (whsd_modules_manager_t *)data;
 
@@ -35,7 +31,7 @@ static void destructor__whsd_modules_manager_t(void *data) {
 
     if(obj->modules) {
         wstk_mutex_lock(obj->mutex);
-        wstk_hash_destroy(&obj->modules);
+        wstk_mem_deref(obj->modules);
         wstk_mutex_unlock(obj->mutex);
     }
 
@@ -102,7 +98,7 @@ static void modlist_foreach_cb_onload(int idx, void *data) {
         entry->success_load = true;
 
         wstk_mutex_lock(manager->mutex);
-        st = wstk_hash_insert_destructor(manager->modules, api->name, entry, destructor__hashtable_values);
+        st = wstk_hash_insert_ex(manager->modules, api->name, entry, true);
         wstk_mutex_unlock(manager->mutex);
     } else {
         log_warn("Unable to load module (err=%i)", err);

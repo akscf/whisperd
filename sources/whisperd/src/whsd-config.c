@@ -24,10 +24,7 @@ static void destructor__whsd_global_t(void *data) {
         wstk_mem_deref(obj->http_server);
     }
 
-    if(obj->modules) {
-        wstk_list_destroy(&obj->modules);
-    }
-
+    wstk_mem_deref(obj->modules);
     wstk_mem_deref(obj->mutex);
 }
 

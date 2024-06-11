@@ -18,14 +18,10 @@ static void destructor__whisper_cpp_global_t(void *data) {
     if(obj->unreg_hnd) {
         whsd_http_ep_unregister(obj->endpoint);
     }
-    if(obj->pools) {
-        wstk_hash_destroy(&obj->pools);
-    }
-    if(obj->models) {
-        wstk_hash_destroy(&obj->models);
-    }
 
     obj->models_path = wstk_mem_deref(obj->models_path);
+    obj->pools = wstk_mem_deref(obj->pools);
+    obj->models = wstk_mem_deref(obj->models);
     obj->mutex = wstk_mem_deref(obj->mutex);
 
     log_debug("Module resources cleared");
@@ -53,10 +49,6 @@ static void destructor__whisper_worker_t(void *ptr) {
     }
 
     log_debug("Worker destroyed: %p", obj);
-}
-
-static void destructor__hashtable_values(void *ptr) {
-    wstk_mem_deref(ptr);
 }
 
 static bool whisper_worker_encoder_begin_callback(struct whisper_context *ctx, struct whisper_state *state, void *udata) {
@@ -97,11 +89,11 @@ wstk_status_t mod_whisper_models_registry_add(whisper_model_descr_t *descr) {
     if(wstk_hash_find(globals->models, descr->name)) {
         status = WSTK_STATUS_ALREADY_EXISTS;
     } else {
-       status = wstk_hash_insert_destructor(globals->models, descr->name, descr, destructor__hashtable_values);
+       status = wstk_hash_insert_ex(globals->models, descr->name, descr, true);
        if(status == WSTK_STATUS_SUCCESS) {
             if(!wstk_str_is_empty(descr->alias)) {
                 if(!wstk_hash_find(globals->models, descr->alias)) {
-                    status = wstk_hash_insert_destructor(globals->models, descr->alias, descr, destructor__hashtable_values);
+                    status = wstk_hash_insert_ex(globals->models, descr->alias, descr, true);
                     if(status == WSTK_STATUS_SUCCESS) {
                         wstk_mem_ref(descr);
                     }

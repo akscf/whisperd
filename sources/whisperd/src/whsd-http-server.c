@@ -24,10 +24,6 @@ static void json_response_ok(wstk_http_conn_t *conn, char *msg, size_t msg_len);
 static void json_response_error(wstk_http_conn_t *conn, char *msg, size_t msg_len);
 
 // --------------------------------------------------------------------------------------------------------------
-static void destructor__hashtable_values(void *ptr) {
-    wstk_mem_deref(ptr);
-}
-
 static void destructor__whsd_http_server_manager_t(void *data) {
     whsd_http_server_manager_t *obj = (whsd_http_server_manager_t *)data;
 
@@ -171,17 +167,17 @@ static void endpont_pre_handler(wstk_http_conn_t *conn, wstk_http_msg_t *msg, vo
                 if(item->string) {
                     if(cJSON_IsString(item)) {
                         char *val = wstk_str_dup(cJSON_GetStringValue(item));
-                        wstk_hash_insert_destructor(params_map, item->string, val, destructor__hashtable_values);
+                        wstk_hash_insert_ex(params_map, item->string, val, true);
                     } else if(cJSON_IsNumber(item)) {
                         char *val = NULL;
                         wstk_sdprintf(&val, "%d", (int)(cJSON_GetNumberValue(item)));
-                        wstk_hash_insert_destructor(params_map, item->string, val, destructor__hashtable_values);
+                        wstk_hash_insert_ex(params_map, item->string, val, true);
                     } else if(cJSON_IsTrue(item)) {
                         char *val = wstk_str_dup("true");
-                        wstk_hash_insert_destructor(params_map, item->string, val, destructor__hashtable_values);
+                        wstk_hash_insert_ex(params_map, item->string, val, true);
                     } else if(cJSON_IsFalse(item)) {
                         char *val = wstk_str_dup("false");
-                        wstk_hash_insert_destructor(params_map, item->string, val, destructor__hashtable_values);
+                        wstk_hash_insert_ex(params_map, item->string, val, true);
                     }
                 }
                 item = item->next;
@@ -192,7 +188,7 @@ static void endpont_pre_handler(wstk_http_conn_t *conn, wstk_http_msg_t *msg, vo
 
     if(upload_form->model_name) {
         char *val = wstk_str_dup(upload_form->model_name);
-        wstk_hash_insert_destructor(params_map, "model", val, destructor__hashtable_values);
+        wstk_hash_insert_ex(params_map, "model", val, true);
     }
 
 #ifdef WHISPERD_DEBUG
@@ -227,7 +223,7 @@ out:
     wstk_mem_deref(rsp_buf);
     wstk_mem_deref(body_tmp_buf);
     wstk_mem_deref(upload_form);
-    if(params_map) { wstk_hash_destroy(&params_map); }
+    wstk_mem_deref(params_map);
     wstk_httpd_sec_ctx_clean(&sec_ctx);
 }
 
