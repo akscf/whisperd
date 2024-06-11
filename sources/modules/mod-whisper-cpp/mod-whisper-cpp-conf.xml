@@ -10,7 +10,7 @@
         </settings>
     </whisper>
 
-    <models path="/opt/whisper-models">
+    <models path="/opt/whisper_cpp/models">
         <model name="base"  file="ggml-model-whisper-base.bin" alias="whisper-1"/>
         <model name="tiny" file="ggml-model-whisper-tiny.bin" />
         <model name="small" file="ggml-model-whisper-small.bin" />

@@ -7,8 +7,8 @@ CFG_PATH=$(PREFIX)/configs/
 
 MOD_OUT=mod-whisper-cpp.so
 
-LIBWHISPER_INC=-I/opt/whisperd/include/libwhisper
-LIBWHISPER_LIB=-L/opt/whisperd/lib -lwhisper
+LIBWHISPER_INC=-I/opt/whisper_cpp/include
+LIBWHISPER_LIB=-L/opt/whisper_cpp/lib -lwhisper
 
 WHISPERD_INC=-I/opt/whisperd/include/wstk -I/opt/whisperd/include/whisperd
 WHISPERD_LIB=-L/opt/whisperd/lib -lwhisperd -lwstk
@@ -16,9 +16,6 @@ WHISPERD_LIB=-L/opt/whisperd/lib -lwhisperd -lwstk
 CFLAGS=-g -O2 -fPIC
 LIBS=$(WHISPERD_LIB) $(LIBWHISPER_LIB)
 INCS=-I. $(WHISPERD_INC) $(LIBWHISPER_INC)
-
-#MOD_SOURCES=mod-whisper-cpp.c mod-whisper-cpp-misc.c mod-whisper-cpp-wobj.cpp
-#MOD_OBJECTS=mod-whisper-cpp.o mod-whisper-cpp-misc.o mod-whisper-cpp-wobj.o
 
 MOD_SOURCES=mod-whisper-cpp.c mod-whisper-cpp-misc.c
 MOD_OBJECTS=mod-whisper-cpp.o mod-whisper-cpp-misc.o
