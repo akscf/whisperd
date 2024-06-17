@@ -8,7 +8,7 @@ Capable to work only with whisper_cpp and have some issues...
 - compatibility with OpenAI v1 http-api
 - some extra parameters for tuning the whisper for a certain request
 
-### Version 2.0 (ready)
+### Version 2.0
 - supports the latest version of whisper_cpp (10.06.2024)<br> 
   with cpu/gpu and other features (see: mod-whisper-cpp)
 - mp3/wav files<br>

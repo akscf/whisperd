@@ -58,33 +58,26 @@ static void req_handler(whsd_endpoint_request_t *req, whsd_endpoint_response_t *
             rsp->error = true; goto out;
         }
 
-        if(wstk_hash_is_empty(globals->pools)) {
-            wcfg.id = 0;
-            wcfg.gpu_dev = globals->whisper_gpu_dev;
-            wcfg.use_gpu = globals->whisper_use_gpu;
-            wcfg.flash_attn = globals->whisper_flash_attn;
-            wcfg.model_file = model_descr->path;
+        wcfg.id = 0;
+        wcfg.gpu_dev = globals->whisper_gpu_dev;
+        wcfg.use_gpu = globals->whisper_use_gpu;
+        wcfg.flash_attn = globals->whisper_flash_attn;
+        wcfg.model_file = model_descr->path;
 
-            if((status = mod_whisper_worker_create(&worker, &wcfg)) != WSTK_STATUS_SUCCESS) {
-                wstk_mbuf_printf(rsp->text, "Unable to create worker");
-                rsp->error = true; goto out;
-            }
-
-            tctx.text_buffer = rsp->text;
-            tctx.audio_buffer = audio_buf;
-            tctx.language = whsd_http_ep_req_param_get(req, "language");
-            tctx.wop_max_tokens = wstk_str_atoi(whsd_http_ep_req_param_get(req, "tokens"));
-            tctx.wop_translate = wstk_str_atob(whsd_http_ep_req_param_get(req, "translate"));
-            tctx.wop_single_segment = wstk_str_atob(whsd_http_ep_req_param_get(req, "single"));
-
-            mod_whisper_worker_transcribe(worker, &tctx);
-            wstk_mem_deref(worker);
-
-        } else {
-            //
-            // todo
-            //
+        if((status = mod_whisper_worker_create(&worker, &wcfg)) != WSTK_STATUS_SUCCESS) {
+            wstk_mbuf_printf(rsp->text, "Unable to create worker");
+            rsp->error = true; goto out;
         }
+
+        tctx.text_buffer = rsp->text;
+        tctx.audio_buffer = audio_buf;
+        tctx.language = whsd_http_ep_req_param_get(req, "language");
+        tctx.wop_max_tokens = wstk_str_atoi(whsd_http_ep_req_param_get(req, "tokens"));
+        tctx.wop_translate = wstk_str_atob(whsd_http_ep_req_param_get(req, "translate"));
+        tctx.wop_single_segment = wstk_str_atob(whsd_http_ep_req_param_get(req, "single"));
+
+        mod_whisper_worker_transcribe(worker, &tctx);
+        wstk_mem_deref(worker);
     }
 out:
     wstk_mem_deref(audio_buf);

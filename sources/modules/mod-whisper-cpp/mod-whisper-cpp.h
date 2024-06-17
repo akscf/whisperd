@@ -8,11 +8,10 @@
 #include <whisper.h>
 
 #define MOD_CFG_VERSION 1
-#define MOD_APP_VERSION "1.0.10062024"
+#define MOD_APP_VERSION "1.0.17062024"
 
 typedef struct {
     wstk_mutex_t    *mutex;
-    wstk_hash_t     *pools;
     wstk_hash_t     *models;        // name|alias -> whisper_model_descr_t
     char            *models_path;
     const char      *endpoint;      // refs to the server endpoint

@@ -13,42 +13,45 @@ static void destructor__whisper_cpp_global_t(void *data) {
     if(!obj || obj->fl_shutdown) { return; }
     obj->fl_shutdown = true;
 
-    log_debug("Clearing modume resouces...");
+#ifdef WHISPERD_DEBUG
+    log_debug("Clearing module resouces...");
+#endif
 
     if(obj->unreg_hnd) {
         whsd_http_ep_unregister(obj->endpoint);
     }
 
     obj->models_path = wstk_mem_deref(obj->models_path);
-    obj->pools = wstk_mem_deref(obj->pools);
     obj->models = wstk_mem_deref(obj->models);
     obj->mutex = wstk_mem_deref(obj->mutex);
 
+#ifdef WHISPERD_DEBUG
     log_debug("Module resources cleared");
+#endif
 }
 
 static void destructor__whisper_model_descr_t(void *data) {
     whisper_model_descr_t *obj = (whisper_model_descr_t *)data;
 
-    log_debug("Destroying description: %p (name=%s)", obj, obj->name);
-
     wstk_mem_deref(obj->alias);
     wstk_mem_deref(obj->name);
     wstk_mem_deref(obj->path);
-
-    log_debug("Description destroyed: %p", obj);
 }
 
 static void destructor__whisper_worker_t(void *ptr) {
     whisper_worker_t *obj = (whisper_worker_t *)ptr;
 
+#ifdef WHISPERD_DEBUG
     log_debug("Destroying worker: %p (wctx=%p)", obj, obj->wctx);
+#endif
 
     if(obj->wctx) {
         whisper_free(obj->wctx);
     }
 
+#ifdef WHISPERD_DEBUG
     log_debug("Worker destroyed: %p", obj);
+#endif
 }
 
 static bool whisper_worker_encoder_begin_callback(struct whisper_context *ctx, struct whisper_state *state, void *udata) {
@@ -141,10 +144,6 @@ wstk_status_t mod_whisper_global_init(whisper_cpp_global_t **out, const char *en
 
     if((status = wstk_mutex_create(&glb->mutex)) != WSTK_STATUS_SUCCESS) {
         log_error("wstk_mutex_create()");
-        goto out;
-    }
-    if((status = wstk_hash_init(&glb->pools)) != WSTK_STATUS_SUCCESS) {
-        log_error("wstk_hash_init()");
         goto out;
     }
     if((status = wstk_hash_init(&glb->models)) != WSTK_STATUS_SUCCESS) {
@@ -265,12 +264,6 @@ wstk_status_t mod_whisper_load_config() {
                 wstk_mem_deref(descr);
             }
         }
-    }
-
-    if((xelem = ezxml_child(xml, "pools")) != NULL) {
-        //
-        // todo
-        //
     }
 
 out:
