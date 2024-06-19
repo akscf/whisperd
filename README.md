@@ -41,6 +41,18 @@ The whisper additional parameters can be specified trgouth the field 'opts': -F 
 Available options: language=XX, tokens=N, translate=true/false, single=true/false<be>
  
 
+## Example build with docker
+
+```bash
+# build container
+docker build . -t whisperd:latest
+# run container
+docker run -p8080:8080 \
+   -e 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/whisperd/lib:/opt/whisper_cpp/lib' \
+   -it --rm --name whisperd whisperd:latest
+```
+
+
 ## Example requests
 ```txt
 # curl -v http://127.0.0.1:8080/v1/audio/transcriptions/ -H "Authorization: Bearer secret123" -H "Content-Type: multipart/form-data" -F model="whisper-1" -F file="@ivr-congratulations_you_pressed_star.wav"
