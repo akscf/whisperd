@@ -8,7 +8,7 @@
 
 #define APP_DEFAULT_HOME    "/opt/whisperd"
 #define APP_SYSLOG_NAME     "whisperd"
-#define APP_VERSION_STR     "2.0.0a"
+#define APP_VERSION_STR     "2.0.1"
 
 #define WHISPERD_DEBUG
 

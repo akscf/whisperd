@@ -56,7 +56,7 @@ static void destructor__module_entry_t(void *data) {
     }
 }
 
-static void modlist_foreach_cb_onload(int idx, void *data) {
+static void modlist_foreach_cb_onload(uint32_t idx, void *data, void *udata) {
     whsd_config_entry_module_t *descr = (whsd_config_entry_module_t *)data;
     module_entry_t *entry = NULL;
     whsd_module_interface_t *api = NULL;
@@ -157,7 +157,7 @@ wstk_status_t whsd_modules_manager_init(whsd_global_t *whsd_glb) {
     log_debug("Loading modules");
 #endif
 
-    wstk_list_foreach(whsd_glb->modules, modlist_foreach_cb_onload);
+    wstk_list_foreach(whsd_glb->modules, modlist_foreach_cb_onload, NULL);
 
 out:
     return status;

@@ -251,9 +251,9 @@ static void json_response_error(wstk_http_conn_t *conn, char *msg, size_t msg_le
 
     jstr = pls2str(msg, msg_len);
     if(jstr) {
-        wstk_httpd_creply(conn, 200, NULL, manager->json_ctype, "{\"error\":{ \"message\": %s, \"type\": \"invalid_request_error\", \"param\": null, \"code\": null }}", jstr);
+        wstk_httpd_creply(conn, 200, NULL, manager->json_ctype, "{\"error\": %s }", jstr);
     } else {
-        wstk_httpd_creply(conn, 200, NULL, manager->json_ctype, "{\"error\":{ \"message\": \"undefined error\", \"type\": \"invalid_request_error\", \"param\": null, \"code\": null }}");
+        wstk_httpd_creply(conn, 200, NULL, manager->json_ctype, "{\"error\": \"undefined error\" }");
     }
 
     wstk_mem_deref(jstr);
@@ -265,9 +265,9 @@ static void json_response_ok(wstk_http_conn_t *conn, char *msg, size_t msg_len) 
 
     jstr = pls2str(msg, msg_len);
     if(jstr) {
-        wstk_httpd_creply(conn, 200, NULL, manager->json_ctype, "{text: %s }", jstr);
+        wstk_httpd_creply(conn, 200, NULL, manager->json_ctype, "{\"text\": %s }", jstr);
     } else {
-        wstk_httpd_creply(conn, 200, NULL, manager->json_ctype, "{text: \"\"}");
+        wstk_httpd_creply(conn, 200, NULL, manager->json_ctype, "{\"text\": \"\" }");
     }
 
     wstk_mem_deref(jstr);
