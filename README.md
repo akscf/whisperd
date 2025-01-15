@@ -1,6 +1,5 @@
 <p>
     Lightweight server with unified web API for various whisper implementations.<br>
-    <br>
     This module was written to divide Freeswitch and ASR things to launch the last one on a more suitable hardware.<br>
     The modules that able to interact with this server: <a href="https://github.com/akscf/mod_openai_asr">mod_openai_asr</a> and <a href="https://github.com/akscf/mod_curl_asr">mod_curl_asr</a>.<br>
     <hr>
