@@ -1,10 +1,8 @@
 <p>
     Lightweight server with unified web API for various whisper implementations.<br>
     <br>
-    For the peopele how interested in <a href="https://github.com/akscf/mod_whisper_asr">mod_whisper_asr</a>: <br>
-    Actually this is the same whisper_cpp but with web-api, it was written to divide Freeswitch and ASR things to launch the last one on a more suitable hardware.<br>
+    This module was written to divide Freeswitch and ASR things to launch the last one on a more suitable hardware.<br>
     The modules that able to interact with this server: <a href="https://github.com/akscf/mod_openai_asr">mod_openai_asr</a> and <a href="https://github.com/akscf/mod_curl_asr">mod_curl_asr</a>.<br>
-    So, you can try the ones, too. <br>
     <hr>
     If you have any troubles to build/setup this or other my modules (or may have questions) text me via IRC <a href="https://web.libera.chat/#akscf">#akscf</a> (<a href="https://libera.chat/">Libera.​Chat</a>)
     <hr>
